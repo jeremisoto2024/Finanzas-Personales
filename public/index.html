@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Financiero</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="loading" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo">💰</div>
+                    <div class="header-title">
+                        <h1>Dashboard Financiero</h1>
+                        <p>Control de finanzas personales</p>
+                    </div>
+                </div>
+                <button id="refreshBtn" class="refresh-btn" onclick="loadData()">
+                    🔄 Actualizar
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <main>
+        <div class="container">
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="card-label">Total Ingresos</div>
+                    <div class="card-value income" id="totalIncome">0,00 €</div>
+                </div>
+                <div class="summary-card">
+                    <div class="card-label">Total Gastos</div>
+                    <div class="card-value expense" id="totalExpenses">0,00 €</div>
+                </div>
+                <div class="summary-card balance">
+                    <div class="card-label">Dinero Disponible</div>
+                    <div class="card-value balance" id="availableBalance">0,00 €</div>
+                </div>
+            </div>
+            
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h2 class="chart-title">Gastos por Categoría</h2>
+                    <div class="chart-container">
+                        <canvas id="pieChart"></canvas>
+                        <div id="pieChartEmpty" class="empty-state" style="display: none;">
+                            No hay datos de gastos
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <h2 class="chart-title">Resumen de Gastos</h2>
+                    <div id="expenseList" class="expense-list">
+                        <div class="empty-state">No hay gastos registrados</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script src="app.js"></script>
+</body>
+</html>
