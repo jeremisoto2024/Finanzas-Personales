@@ -49,7 +49,7 @@ def query_notion_database(database_id: str):
     except:
         return []
 
-@app.get("/api")
+@app.get("/")
 async def root():
     return {"message": "Dashboard Financiero API", "status": "online"}
 
