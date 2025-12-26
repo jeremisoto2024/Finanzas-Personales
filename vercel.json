@@ -1,4 +1,6 @@
 {
+  "buildCommand": "echo 'No build needed'",
+  "outputDirectory": "public",
   "builds": [
     {
       "src": "api/index.py",
@@ -7,8 +9,12 @@
   ],
   "routes": [
     {
-      "src": "/(.*)",
+      "src": "/api/(.*)",
       "dest": "api/index.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1"
     }
   ]
 }
