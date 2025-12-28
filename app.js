@@ -1,10 +1,12 @@
-// app.js - VERSIÓN OPTIMIZADA PARA MÓVIL
+// app.js - VERSIÓN COMPLETA CON ALERTAS INTELIGENTES
 const API_BASE_URL = 'https://finanzas-personales-swart.vercel.app';
 let pieChartInstance = null;
 
+// ===== FUNCIÓN PRINCIPAL =====
 async function loadData() {
     showLoading(true);
     try {
+        // Cargar datos de la API
         const [resResumen, resCategorias] = await Promise.all([
             fetch(`${API_BASE_URL}/api/financial-summary`),
             fetch(`${API_BASE_URL}/api/expenses-by-category`)
@@ -19,28 +21,45 @@ async function loadData() {
             category: fixEncoding(item.category)
         }));
         
+        // Actualizar todas las secciones
         updateSummaryCards(resumen);
         updateExpenseList(categorias);
         updatePieChart(categorias);
         
+        // 🆕 NUEVO: Generar y mostrar alertas inteligentes
+        const alertas = generarAlertas(resumen, categorias);
+        mostrarAlertas(alertas);
+        
     } catch (error) {
-        console.error('Error:', error);
-        showToast('Error cargando datos', 'error');
+        console.error('Error cargando datos:', error);
+        mostrarMensajeError('No se pudieron cargar los datos. Revisa tu conexión.');
     } finally {
         showLoading(false);
     }
 }
 
+// ===== FUNCIONES DE AYUDA =====
 function fixEncoding(text) {
     return text.replace(/Ã³/g, 'ó').replace(/Ã/g, 'í');
 }
 
+function showLoading(show) {
+    document.getElementById('loading').style.display = show ? 'flex' : 'none';
+}
+
+function mostrarMensajeError(mensaje) {
+    // Puedes mejorar esto mostrando un mensaje en pantalla
+    console.error('Error:', mensaje);
+}
+
+// ===== ACTUALIZAR TARJETAS DE RESUMEN =====
 function updateSummaryCards(resumen) {
     document.getElementById('totalIncome').textContent = `${resumen.total_income.toFixed(2)} €`;
     document.getElementById('totalExpenses').textContent = `${resumen.total_expenses.toFixed(2)} €`;
     document.getElementById('availableBalance').textContent = `${resumen.available_balance.toFixed(2)} €`;
 }
 
+// ===== ACTUALIZAR LISTA DE GASTOS =====
 function updateExpenseList(categorias) {
     const expenseList = document.getElementById('expenseList');
     
@@ -68,6 +87,7 @@ function updateExpenseList(categorias) {
     expenseList.innerHTML = html;
 }
 
+// ===== ACTUALIZAR GRÁFICO CIRCULAR =====
 function updatePieChart(categorias) {
     const canvas = document.getElementById('pieChart');
     const emptyState = document.getElementById('pieChartEmpty');
@@ -92,107 +112,133 @@ function updatePieChart(categorias) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom' } }
+            plugins: { 
+                legend: { 
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        font: { size: 12 }
+                    }
+                }
+            }
         }
     });
 }
 
+// ===== COLORES PARA CATEGORÍAS =====
 function getCategoryColor(category) {
     const colors = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
     let hash = 0;
-    for (let i = 0; i < category.length; i++) hash = category.charCodeAt(i) + ((hash << 5) - hash);
+    for (let i = 0; i < category.length; i++) {
+        hash = category.charCodeAt(i) + ((hash << 5) - hash);
+    }
     return colors[Math.abs(hash) % colors.length];
 }
 
-function showLoading(show) {
-    document.getElementById('loading').style.display = show ? 'flex' : 'none';
-}
-
-function showToast(message, type = 'info') {
-    // Puedes implementar esto después si quieres notificaciones
-    console.log(`${type}: ${message}`);
-}
-
-// Inicializar
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('refreshBtn').addEventListener('click', loadData);
-    loadData();
-});
-// Efecto de partículas sutiles en el fondo (opcional)
-function addBackgroundEffect() {
-    const canvas = document.createElement('canvas');
-    canvas.style.position = 'fixed';
-    canvas.style.top = '0';
-    canvas.style.left = '0';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    canvas.style.pointerEvents = 'none';
-    canvas.style.zIndex = '-1';
-    document.body.appendChild(canvas);
-
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const particles = [];
-    const particleCount = 30;
-
-    for (let i = 0; i < particleCount; i++) {
-        particles.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            size: Math.random() * 2 + 0.5,
-            speed: Math.random() * 0.5 + 0.2,
-            color: `rgba(67, 97, 238, ${Math.random() * 0.1 + 0.05})`
+// ===== 🆕 SISTEMA DE ALERTAS INTELIGENTES =====
+function generarAlertas(resumen, categorias) {
+    const alertas = [];
+    
+    // 🔴 Alerta 1: BALANCE NEGATIVO
+    if (resumen.available_balance < 0) {
+        alertas.push({
+            tipo: 'peligro',
+            mensaje: `Balance negativo: €${Math.abs(resumen.available_balance).toFixed(2)}`,
+            icono: '🔴'
         });
     }
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        particles.forEach(p => {
-            p.y -= p.speed;
-            if (p.y < 0) p.y = canvas.height;
-            
-            ctx.fillStyle = p.color;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            ctx.fill();
-        });
-        
-        requestAnimationFrame(animate);
+    
+    // 🟠 Alerta 2: GASTÓ MÁS DEL 90% DE INGRESOS
+    if (resumen.total_income > 0) {
+        const porcentajeGastado = (resumen.total_expenses / resumen.total_income) * 100;
+        if (porcentajeGastado >= 90) {
+            alertas.push({
+                tipo: 'advertencia',
+                mensaje: `Cuidado: Has gastado el ${Math.round(porcentajeGastado)}% de tus ingresos`,
+                icono: '⚠️'
+            });
+        }
     }
     
-    animate();
+    // 🟢 Alerta 3: GASTOS BAJOS (positiva)
+    if (resumen.total_expenses < resumen.total_income * 0.5 && resumen.total_income > 0) {
+        alertas.push({
+            tipo: 'positiva',
+            mensaje: `¡Vas bien! Gastos por debajo del 50% de tus ingresos`,
+            icono: '✅'
+        });
+    }
     
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+    // 🔵 Alerta 4: SIN DATOS
+    if (resumen.total_income === 0 && resumen.total_expenses === 0) {
+        alertas.push({
+            tipo: 'info',
+            mensaje: `Comienza registrando tus primeros ingresos y gastos`,
+            icono: '💡'
+        });
+    }
+    
+    // 📊 Alerta 5: GENÉRICA (si no hay otras)
+    if (alertas.length === 0) {
+        alertas.push({
+            tipo: 'info',
+            mensaje: `Todo en orden. Sigue controlando tus finanzas.`,
+            icono: '📊'
+        });
+    }
+    
+    return alertas;
+}
+
+function mostrarAlertas(alertas) {
+    const container = document.getElementById('alertas-container');
+    if (!container) return;
+    
+    let html = '';
+    alertas.forEach(alerta => {
+        html += `
+            <div class="alerta-item alerta-${alerta.tipo}">
+                <span class="alerta-icono">${alerta.icono}</span>
+                <span class="alerta-texto">${alerta.mensaje}</span>
+            </div>
+        `;
     });
+    
+    container.innerHTML = html;
 }
 
-// Iniciar efectos cuando la página cargue
+// ===== INICIALIZACIÓN =====
 document.addEventListener('DOMContentLoaded', () => {
-    // Descomenta la siguiente línea si quieres el efecto de partículas
-    // addBackgroundEffect();
+    // Configurar botón de actualizar
+    const refreshBtn = document.getElementById('refreshBtn');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', loadData);
+    }
     
-    // Añadir fecha actual al header
-    const date = new Date();
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const dateString = date.toLocaleDateString('es-ES', options);
+    // Cargar datos iniciales
+    loadData();
     
-    const dateElement = document.createElement('div');
-    dateElement.className = 'current-date';
-    dateElement.innerHTML = `<span>📅</span> ${dateString}`;
-    dateElement.style.cssText = `
-        font-size: 0.85rem;
-        color: var(--gray-800);
-        margin-top: 0.25rem;
-        opacity: 0.9;
-    `;
-    
-    const headerTitle = document.querySelector('.header-title');
-    if (headerTitle) {
-        headerTitle.appendChild(dateElement);
+    // 🆕 Añadir fecha actual al header (opcional)
+    try {
+        const date = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const dateString = date.toLocaleDateString('es-ES', options);
+        
+        const dateElement = document.createElement('div');
+        dateElement.className = 'current-date';
+        dateElement.innerHTML = `<span>📅</span> ${dateString}`;
+        dateElement.style.cssText = `
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 0.25rem;
+            opacity: 0.9;
+        `;
+        
+        const headerTitle = document.querySelector('.header-title');
+        if (headerTitle) {
+            headerTitle.appendChild(dateElement);
+        }
+    } catch (e) {
+        console.log('No se pudo añadir la fecha:', e);
     }
 });
