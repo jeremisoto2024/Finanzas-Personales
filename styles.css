@@ -508,3 +508,173 @@ main {
         font-size: 0.9rem;
     }
 }
+/* ===== 🆕 PRESUPUESTOS VISUALES ===== */
+.presupuestos-section {
+    margin: 2.5rem 0;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
+    border-radius: 16px;
+    border: 1px solid rgba(67, 97, 238, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #1e293b;
+}
+
+.section-subtitle {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.presupuestos-container {
+    margin-top: 1rem;
+}
+
+.presupuestos-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.presupuesto-item {
+    background: white;
+    padding: 1.25rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.presupuesto-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.presupuesto-item.bueno {
+    border-left: 4px solid #10b981;
+}
+
+.presupuesto-item.advertencia {
+    border-left: 4px solid #f59e0b;
+}
+
+.presupuesto-item.excedido {
+    border-left: 4px solid #ef4444;
+}
+
+.presupuesto-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+.presupuesto-header span:first-child {
+    color: #1e293b;
+}
+
+.presupuesto-header span:last-child {
+    font-family: 'JetBrains Mono', monospace;
+    color: #475569;
+}
+
+.progress-bar {
+    height: 10px;
+    background: #f1f5f9;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 0.75rem 0;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.8s ease-in-out;
+}
+
+.presupuesto-item.bueno .progress-fill {
+    background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.presupuesto-item.advertencia .progress-fill {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.presupuesto-item.excedido .progress-fill {
+    background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+.presupuesto-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.presupuesto-footer span:first-child {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.presupuesto-item.bueno .presupuesto-footer span:first-child {
+    color: #10b981;
+}
+
+.presupuesto-item.advertencia .presupuesto-footer span:first-child {
+    color: #f59e0b;
+}
+
+.presupuesto-item.excedido .presupuesto-footer span:first-child {
+    color: #ef4444;
+}
+
+.alerta-texto, .advertencia-texto, .positivo-texto {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.alerta-texto {
+    background: rgba(239, 68, 68, 0.1);
+    color: #b91c1c;
+}
+
+.advertencia-texto {
+    background: rgba(245, 158, 11, 0.1);
+    color: #92400e;
+}
+
+.positivo-texto {
+    background: rgba(16, 185, 129, 0.1);
+    color: #065f46;
+}
+
+.cargando {
+    text-align: center;
+    padding: 2rem;
+    color: #64748b;
+    font-style: italic;
+}
+
+/* Responsive móvil */
+@media (max-width: 768px) {
+    .presupuestos-section {
+        padding: 1rem;
+        margin: 2rem 0;
+    }
+    
+    .presupuesto-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
