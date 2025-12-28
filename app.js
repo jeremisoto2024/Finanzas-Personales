@@ -1,6 +1,16 @@
-// app.js - VERSIÓN COMPLETA CON ALERTAS INTELIGENTES
+// app.js - VERSIÓN COMPLETA CON ALERTAS Y PRESUPUESTOS
 const API_BASE_URL = 'https://finanzas-personales-swart.vercel.app';
 let pieChartInstance = null;
+
+// 🆕 TUS PRESUPUESTOS MENSUALES (ajusta estos valores)
+const PRESUPUESTOS = {
+    'Alimentación': 250,
+    'Salud e higiene': 100,
+    'Transporte': 80,
+    'Ocio': 150,
+    'Vivienda': 500,
+    'Otros': 200
+};
 
 // ===== FUNCIÓN PRINCIPAL =====
 async function loadData() {
@@ -26,9 +36,15 @@ async function loadData() {
         updateExpenseList(categorias);
         updatePieChart(categorias);
         
-        // 🆕 NUEVO: Generar y mostrar alertas inteligentes
+        // 🆕 Alertas inteligentes
         const alertas = generarAlertas(resumen, categorias);
         mostrarAlertas(alertas);
+        
+        // 🆕 Presupuestos visuales
+        mostrarPresupuestos(categorias);
+        
+        // 🆕 Proyección de fin de mes
+        mostrarProyeccionFinDeMes(resumen, categorias);
         
     } catch (error) {
         console.error('Error cargando datos:', error);
@@ -207,6 +223,145 @@ function mostrarAlertas(alertas) {
     container.innerHTML = html;
 }
 
+// ===== 🆕 PRESUPUESTOS VISUALES =====
+function mostrarPresupuestos(gastosPorCategoria) {
+    const container = document.getElementById('presupuestos-container');
+    if (!container) return;
+    
+    if (gastosPorCategoria.length === 0) {
+        container.innerHTML = '<div class="empty-state">No hay datos para mostrar presupuestos</div>';
+        return;
+    }
+    
+    let html = '<div class="presupuestos-grid">';
+    
+    gastosPorCategoria.forEach(item => {
+        const presupuesto = PRESUPUESTOS[item.category] || 100;
+        const porcentaje = Math.min((item.amount / presupuesto) * 100, 100);
+        const esExcedido = porcentaje >= 90;
+        const esAdvertencia = porcentaje >= 70 && porcentaje < 90;
+        
+        html += `
+            <div class="presupuesto-item ${esExcedido ? 'excedido' : esAdvertencia ? 'advertencia' : 'bueno'}">
+                <div class="presupuesto-header">
+                    <span>${item.category}</span>
+                    <span>€${item.amount.toFixed(2)} / €${presupuesto}</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${porcentaje}%"></div>
+                </div>
+                <div class="presupuesto-footer">
+                    <span>${porcentaje.toFixed(0)}%</span>
+                    ${esExcedido ? '<span class="alerta-texto">¡Cerca del límite!</span>' : 
+                      esAdvertencia ? '<span class="advertencia-texto">Controla tus gastos</span>' : 
+                      '<span class="positivo-texto">Bien</span>'}
+                </div>
+            </div>
+        `;
+    });
+    
+    // Añadir categorías sin gastos
+    Object.keys(PRESUPUESTOS).forEach(categoria => {
+        const tieneGastos = gastosPorCategoria.some(gasto => gasto.category === categoria);
+        if (!tieneGastos) {
+            html += `
+                <div class="presupuesto-item bueno">
+                    <div class="presupuesto-header">
+                        <span>${categoria}</span>
+                        <span>€0 / €${PRESUPUESTOS[categoria]}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="presupuesto-footer">
+                        <span>0%</span>
+                        <span class="positivo-texto">Sin gastos</span>
+                    </div>
+                </div>
+            `;
+        }
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+// ===== 🆕 PROYECCIÓN FIN DE MES =====
+function mostrarProyeccionFinDeMes(resumen, categorias) {
+    const container = document.getElementById('proyeccion-container');
+    if (!container) return;
+    
+    const hoy = new Date();
+    const ultimoDiaMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate();
+    const diasTranscurridos = hoy.getDate();
+    const diasRestantes = ultimoDiaMes - diasTranscurridos;
+    
+    // Gasto promedio diario
+    const gastoPromedioDiario = resumen.total_expenses / diasTranscurridos;
+    
+    // Proyección
+    const proyeccionGasto = resumen.total_expenses + (gastoPromedioDiario * diasRestantes);
+    const balanceProyectado = resumen.total_income - proyeccionGasto;
+    
+    // Gasto diario recomendado para llegar a 0
+    const disponibleRestante = resumen.available_balance;
+    const gastoDiarioRecomendado = disponibleRestante / diasRestantes;
+    
+    let html = '';
+    
+    if (balanceProyectado < 0) {
+        html = `
+            <div class="proyeccion-item peligro">
+                <div class="proyeccion-icono">⚠️</div>
+                <div class="proyeccion-contenido">
+                    <div class="proyeccion-titulo">Proyección negativa</div>
+                    <div class="proyeccion-descripcion">
+                        Si sigues así, terminarás con <strong>€${Math.abs(balanceProyectado).toFixed(2)} negativo</strong>
+                    </div>
+                    <div class="proyeccion-datos">
+                        <div class="dato-item">
+                            <span>Gasto diario actual:</span>
+                            <strong>€${gastoPromedioDiario.toFixed(2)}</strong>
+                        </div>
+                        <div class="dato-item">
+                            <span>Máximo diario recomendado:</span>
+                            <strong>€${gastoDiarioRecomendado.toFixed(2)}</strong>
+                        </div>
+                        <div class="dato-item">
+                            <span>Días restantes:</span>
+                            <strong>${diasRestantes}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        html = `
+            <div class="proyeccion-item positiva">
+                <div class="proyeccion-icono">✅</div>
+                <div class="proyeccion-contenido">
+                    <div class="proyeccion-titulo">Proyección positiva</div>
+                    <div class="proyeccion-descripcion">
+                        Vas bien. Proyección: <strong>€${balanceProyectado.toFixed(2)} disponible</strong> a fin de mes
+                    </div>
+                    <div class="proyeccion-datos">
+                        <div class="dato-item">
+                            <span>Puedes gastar hasta:</span>
+                            <strong>€${gastoDiarioRecomendado.toFixed(2)} diarios</strong>
+                        </div>
+                        <div class="dato-item">
+                            <span>Días restantes:</span>
+                            <strong>${diasRestantes}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    container.innerHTML = html;
+}
+
 // ===== INICIALIZACIÓN =====
 document.addEventListener('DOMContentLoaded', () => {
     // Configurar botón de actualizar
@@ -218,7 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cargar datos iniciales
     loadData();
     
-    // 🆕 Añadir fecha actual al header (opcional)
+    // Añadir fecha actual al header
     try {
         const date = new Date();
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
