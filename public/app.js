@@ -1,95 +1,180 @@
-const BACKEND_URL = window.location.origin;
-const COLORS = ['#10b981','#f43f5e','#3b82f6','#f59e0b','#8b5cf6','#ec4899','#14b8a6','#f97316'];
-let chart = null;
+// app.js - CONEXIÓN COMPLETA CON TU API DE FASTAPI
 
-function showLoading(show) {
-    document.getElementById('loading').style.display = show ? 'flex' : 'none';
-    document.getElementById('refreshBtn').disabled = show;
-}
+const API_BASE_URL = 'https://finanzas-personales-swart.vercel.app';
+let pieChartInstance = null; // Para controlar el gráfico
 
-function showToast(msg, error = false) {
-    const toast = document.createElement('div');
-    toast.className = 'toast' + (error ? ' error' : '');
-    toast.textContent = msg;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-}
-
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('es-ES', {style: 'currency', currency: 'EUR'}).format(amount);
-}
-
+// Función principal que carga todos los datos
 async function loadData() {
     showLoading(true);
+    
     try {
-        const [summary, expenses] = await Promise.all([
-            fetch(`${BACKEND_URL}/api/financial-summary`).then(r => r.json()),
-            fetch(`${BACKEND_URL}/api/expenses-by-category`).then(r => r.json())
-        ]);
+        // 1. Cargar el resumen financiero
+        const resResumen = await fetch(`${API_BASE_URL}/api/financial-summary`);
+        const resumen = await resResumen.json();
         
-        document.getElementById('totalIncome').textContent = formatCurrency(summary.total_income);
-        document.getElementById('totalExpenses').textContent = formatCurrency(summary.total_expenses);
-        document.getElementById('availableBalance').textContent = formatCurrency(summary.available_balance);
+        // 2. Cargar gastos por categoría
+        const resCategorias = await fetch(`${API_BASE_URL}/api/expenses-by-category`);
+        let gastosPorCategoria = await resCategorias.json();
         
-        updateChart(expenses);
-        updateList(expenses);
-        showToast('Datos actualizados');
+        // 3. Corregir caracteres especiales (el problema de "AlimentaciÃ³n")
+        gastosPorCategoria = gastosPorCategoria.map(item => ({
+            ...item,
+            category: fixEncoding(item.category)
+        }));
+        
+        console.log('✅ Datos cargados:', { resumen, gastosPorCategoria });
+        
+        // 4. Actualizar la interfaz
+        updateSummaryCards(resumen);
+        updateExpenseList(gastosPorCategoria);
+        updatePieChart(gastosPorCategoria);
+        
     } catch (error) {
-        showToast('Error al cargar datos', true);
+        console.error('❌ Error cargando datos:', error);
+        alert('Error al cargar los datos. Revisa la consola para más detalles.');
     } finally {
         showLoading(false);
     }
 }
 
-function updateChart(data) {
-    const canvas = document.getElementById('pieChart');
-    const empty = document.getElementById('pieChartEmpty');
+// Función para corregir problemas de codificación
+function fixEncoding(text) {
+    try {
+        return decodeURIComponent(escape(text));
+    } catch (e) {
+        return text;
+    }
+}
+
+// Actualizar las tarjetas de resumen
+function updateSummaryCards(resumen) {
+    document.getElementById('totalIncome').textContent = `${resumen.total_income.toFixed(2)} €`;
+    document.getElementById('totalExpenses').textContent = `${resumen.total_expenses.toFixed(2)} €`;
+    document.getElementById('availableBalance').textContent = `${resumen.available_balance.toFixed(2)} €`;
+}
+
+// Actualizar la lista de gastos por categoría
+function updateExpenseList(categorias) {
+    const expenseList = document.getElementById('expenseList');
     
-    if (!data.length) {
+    if (categorias.length === 0) {
+        expenseList.innerHTML = '<div class="empty-state">No hay gastos registrados</div>';
+        return;
+    }
+    
+    let html = '';
+    categorias.forEach(item => {
+        html += `
+            <div class="expense-item">
+                <div class="expense-category">
+                    <span class="category-dot" style="background-color: ${getCategoryColor(item.category)}"></span>
+                    <span>${item.category}</span>
+                </div>
+                <div class="expense-details">
+                    <span class="expense-amount">${item.amount.toFixed(2)} €</span>
+                    <span class="expense-percentage">${item.percentage}%</span>
+                </div>
+            </div>
+        `;
+    });
+    
+    expenseList.innerHTML = html;
+}
+
+// Crear o actualizar el gráfico circular
+function updatePieChart(categorias) {
+    const canvas = document.getElementById('pieChart');
+    const emptyState = document.getElementById('pieChartEmpty');
+    
+    if (categorias.length === 0) {
         canvas.style.display = 'none';
-        empty.style.display = 'flex';
-        if (chart) chart.destroy();
+        emptyState.style.display = 'block';
+        if (pieChartInstance) {
+            pieChartInstance.destroy();
+            pieChartInstance = null;
+        }
         return;
     }
     
     canvas.style.display = 'block';
-    empty.style.display = 'none';
-    if (chart) chart.destroy();
+    emptyState.style.display = 'none';
     
-    chart = new Chart(canvas, {
+    const ctx = canvas.getContext('2d');
+    
+    // Destruir gráfico anterior si existe
+    if (pieChartInstance) {
+        pieChartInstance.destroy();
+    }
+    
+    // Crear nuevo gráfico
+    pieChartInstance = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: data.map(d => d.category),
+            labels: categorias.map(item => item.category),
             datasets: [{
-                data: data.map(d => d.amount),
-                backgroundColor: COLORS
+                data: categorias.map(item => item.amount),
+                backgroundColor: categorias.map(item => getCategoryColor(item.category)),
+                borderWidth: 2,
+                borderColor: '#ffffff'
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
-                legend: { position: 'bottom' }
+                legend: {
+                    position: 'right',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            const percentage = categorias[context.dataIndex]?.percentage || 0;
+                            return `${label}: ${value.toFixed(2)} € (${percentage}%)`;
+                        }
+                    }
+                }
             }
         }
     });
 }
 
-function updateList(data) {
-    const list = document.getElementById('expenseList');
-    if (!data.length) {
-        list.innerHTML = '<div class="empty-state">No hay gastos</div>';
-        return;
+// Colores para las categorías
+function getCategoryColor(category) {
+    const colors = [
+        '#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
+        '#EC4899', '#06B6D4', '#84CC16', '#F97316', '#6366F1'
+    ];
+    
+    // Usar un hash simple para asignar colores consistentes
+    let hash = 0;
+    for (let i = 0; i < category.length; i++) {
+        hash = category.charCodeAt(i) + ((hash << 5) - hash);
     }
-    list.innerHTML = data.map((e, i) => `
-        <div class="expense-item">
-            <div class="expense-color" style="background:${COLORS[i%COLORS.length]}"></div>
-            <div class="expense-info">
-                <div class="expense-category">${e.category}</div>
-                <div class="expense-percentage">${e.percentage.toFixed(1)}% del total</div>
-            </div>
-            <div class="expense-amount">${formatCurrency(e.amount)}</div>
-        </div>
-    `).join('');
+    
+    return colors[Math.abs(hash) % colors.length];
 }
 
-window.addEventListener('DOMContentLoaded', loadData);
+// Mostrar/ocultar pantalla de carga
+function showLoading(show) {
+    const loading = document.getElementById('loading');
+    loading.style.display = show ? 'flex' : 'none';
+}
+
+// Cargar datos al iniciar la página
+document.addEventListener('DOMContentLoaded', () => {
+    // Hacer que el botón de actualizar funcione
+    const refreshBtn = document.getElementById('refreshBtn');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', loadData);
+    }
+    
+    // Cargar datos automáticamente
+    loadData();
+});
