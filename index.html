@@ -23,7 +23,7 @@
                         <p>Control de finanzas personales</p>
                     </div>
                 </div>
-                <button id="refreshBtn" class="refresh-btn" onclick="loadData()">
+                <button id="refreshBtn" class="refresh-btn">
                     🔄 Actualizar
                 </button>
             </div>
@@ -32,6 +32,7 @@
     
     <main>
         <div class="container">
+            <!-- Tarjetas de Resumen -->
             <div class="summary-grid">
                 <div class="summary-card">
                     <div class="card-label">Total Ingresos</div>
@@ -47,6 +48,20 @@
                 </div>
             </div>
             
+            <!-- 🆕 SECCIÓN DE ALERTAS INTELIGENTES -->
+            <section class="alertas-section">
+                <div class="container">
+                    <div id="alertas-container" class="alertas-container">
+                        <!-- Las alertas se generarán aquí automáticamente -->
+                        <div class="alerta-item alerta-info">
+                            <span class="alerta-icono">📊</span>
+                            <span class="alerta-texto">Cargando tus datos financieros...</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Gráficos y Lista de Gastos -->
             <div class="charts-grid">
                 <div class="chart-card">
                     <h2 class="chart-title">Gastos por Categoría</h2>
