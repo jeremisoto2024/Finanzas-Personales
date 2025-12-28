@@ -118,3 +118,81 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('refreshBtn').addEventListener('click', loadData);
     loadData();
 });
+// Efecto de partículas sutiles en el fondo (opcional)
+function addBackgroundEffect() {
+    const canvas = document.createElement('canvas');
+    canvas.style.position = 'fixed';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    canvas.style.pointerEvents = 'none';
+    canvas.style.zIndex = '-1';
+    document.body.appendChild(canvas);
+
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particles = [];
+    const particleCount = 30;
+
+    for (let i = 0; i < particleCount; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 2 + 0.5,
+            speed: Math.random() * 0.5 + 0.2,
+            color: `rgba(67, 97, 238, ${Math.random() * 0.1 + 0.05})`
+        });
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        particles.forEach(p => {
+            p.y -= p.speed;
+            if (p.y < 0) p.y = canvas.height;
+            
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        
+        requestAnimationFrame(animate);
+    }
+    
+    animate();
+    
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+}
+
+// Iniciar efectos cuando la página cargue
+document.addEventListener('DOMContentLoaded', () => {
+    // Descomenta la siguiente línea si quieres el efecto de partículas
+    // addBackgroundEffect();
+    
+    // Añadir fecha actual al header
+    const date = new Date();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const dateString = date.toLocaleDateString('es-ES', options);
+    
+    const dateElement = document.createElement('div');
+    dateElement.className = 'current-date';
+    dateElement.innerHTML = `<span>📅</span> ${dateString}`;
+    dateElement.style.cssText = `
+        font-size: 0.85rem;
+        color: var(--gray-800);
+        margin-top: 0.25rem;
+        opacity: 0.9;
+    `;
+    
+    const headerTitle = document.querySelector('.header-title');
+    if (headerTitle) {
+        headerTitle.appendChild(dateElement);
+    }
+});
