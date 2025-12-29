@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Financiero</title>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -68,51 +68,9 @@
                 <div class="container">
                     <h2 class="section-title text-gradient reveal-text">📋 Presupuestos Mensuales</h2>
                     <p class="section-subtitle">Seguimiento de gastos vs tus límites establecidos</p>
-                    
-                    <!-- EJEMPLO DE PRESUPUESTO (como en tu imagen) -->
                     <div id="presupuestos-container" class="presupuestos-container">
-                        <div class="presupuesto-item bueno hover-lift">
-                            <div class="presupuesto-header">
-                                <span class="presupuesto-categoria">🍎 Alimentación</span>
-                                <span class="presupuesto-monto">€7.50 / €100</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 8%"></div>
-                            </div>
-                            <div class="presupuesto-footer">
-                                <span class="presupuesto-porcentaje">8%</span>
-                                <span class="positivo-texto">¡Bien!</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Más presupuestos se generarán aquí dinámicamente -->
-                        <div class="presupuesto-item advertencia hover-lift">
-                            <div class="presupuesto-header">
-                                <span class="presupuesto-categoria">🚗 Transporte</span>
-                                <span class="presupuesto-monto">€40.00 / €60</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 67%"></div>
-                            </div>
-                            <div class="presupuesto-footer">
-                                <span class="presupuesto-porcentaje">67%</span>
-                                <span class="advertencia-texto">Cuidado</span>
-                            </div>
-                        </div>
-                        
-                        <div class="presupuesto-item excedido hover-lift">
-                            <div class="presupuesto-header">
-                                <span class="presupuesto-categoria">🎮 Entretenimiento</span>
-                                <span class="presupuesto-monto">€120.00 / €80</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 150%"></div>
-                            </div>
-                            <div class="presupuesto-footer">
-                                <span class="presupuesto-porcentaje">150%</span>
-                                <span class="alerta-texto">Excedido</span>
-                            </div>
-                        </div>
+                        <!-- Los presupuestos se generarán aquí -->
+                        <div class="cargando text-gradient">Calculando tus presupuestos...</div>
                     </div>
                 </div>
             </section>
@@ -123,31 +81,8 @@
                     <h2 class="section-title text-gradient reveal-text">🔮 Proyección Fin de Mes</h2>
                     <p class="section-subtitle">Calculamos automáticamente cómo terminarás el mes</p>
                     <div id="proyeccion-container" class="proyeccion-container">
-                        <div class="proyeccion-item positiva hover-lift">
-                            <div class="proyeccion-icono animate-float">📈</div>
-                            <div class="proyeccion-contenido">
-                                <h3 class="proyeccion-titulo">¡Vas por buen camino!</h3>
-                                <p class="proyeccion-descripcion">
-                                    Si mantienes este ritmo de gastos, terminarás el mes con 
-                                    <strong class="text-gradient">€77.50 disponibles</strong>. 
-                                    Tus gastos están por debajo del 50% de tus ingresos.
-                                </p>
-                                <div class="proyeccion-datos">
-                                    <div class="dato-item">
-                                        <span>Ingresos mensuales</span>
-                                        <strong>€250.00</strong>
-                                    </div>
-                                    <div class="dato-item">
-                                        <span>Gastos actuales</span>
-                                        <strong>€172.50</strong>
-                                    </div>
-                                    <div class="dato-item">
-                                        <span>Proyección final</span>
-                                        <strong class="text-gradient">€77.50</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- La proyección se generará aquí -->
+                        <div class="cargando text-gradient">Calculando proyección...</div>
                     </div>
                 </div>
             </section>
@@ -167,38 +102,7 @@
                 <div class="chart-card animate-fadeInUp stagger-delay-4 hover-lift">
                     <h2 class="chart-title text-gradient">📝 Resumen de Gastos</h2>
                     <div id="expenseList" class="expense-list">
-                        <div class="expense-item hover-lift">
-                            <div class="expense-category">
-                                <div class="expense-color" style="background: #4361ee;"></div>
-                                <span>Alimentación</span>
-                            </div>
-                            <div class="expense-details">
-                                <span class="expense-amount">€7.50</span>
-                                <span class="expense-percentage">15%</span>
-                            </div>
-                        </div>
-                        
-                        <div class="expense-item hover-lift">
-                            <div class="expense-category">
-                                <div class="expense-color" style="background: #f72585;"></div>
-                                <span>Transporte</span>
-                            </div>
-                            <div class="expense-details">
-                                <span class="expense-amount">€40.00</span>
-                                <span class="expense-percentage">45%</span>
-                            </div>
-                        </div>
-                        
-                        <div class="expense-item hover-lift">
-                            <div class="expense-category">
-                                <div class="expense-color" style="background: #06d6a0;"></div>
-                                <span>Entretenimiento</span>
-                            </div>
-                            <div class="expense-details">
-                                <span class="expense-amount">€120.00</span>
-                                <span class="expense-percentage">80%</span>
-                            </div>
-                        </div>
+                        <div class="empty-state">No hay gastos registrados</div>
                     </div>
                 </div>
             </div>
@@ -269,14 +173,6 @@
                 text.style.animationDelay = `${index * 0.3 + 0.5}s`;
             }, 500);
         });
-        
-        // Simular datos iniciales (esto lo hará tu app.js después)
-        setTimeout(() => {
-            document.getElementById('totalIncome').textContent = '250,00 €';
-            document.getElementById('totalExpenses').textContent = '172,50 €';
-            document.getElementById('availableBalance').textContent = '77,50 €';
-            activateCountAnimations();
-        }, 1500);
     });
     </script>
 </body>
