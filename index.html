@@ -9,54 +9,52 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="parallax-bg"></div>
-    
     <div id="loading" class="loading-overlay" style="display: none;">
-        <div class="pulse-loader"></div>
+        <div class="loading-spinner"></div>
     </div>
     
-    <header class="animate-fadeInDown">
+    <header>
         <div class="container">
             <div class="header-content">
                 <div class="header-left">
-                    <div class="logo animate-float">💰</div>
+                    <div class="logo">💰</div>
                     <div class="header-title">
-                        <h1 class="text-shimmer">Dashboard Financiero</h1>
+                        <h1>Dashboard Financiero</h1>
                         <p>Control de finanzas personales</p>
                     </div>
                 </div>
-                <button id="refreshBtn" class="refresh-btn hover-shine btn-magnetic">
-                    <span class="text-shimmer">🔄 Actualizar</span>
+                <button id="refreshBtn" class="refresh-btn">
+                    🔄 Actualizar
                 </button>
             </div>
         </div>
     </header>
     
-    <main class="particles-container">
+    <main>
         <div class="container">
             <!-- Tarjetas de Resumen -->
             <div class="summary-grid">
-                <div class="summary-card animate-fadeInUp stagger-delay-1 hover-lift card-border-animation">
-                    <div class="card-label">📈 Total Ingresos</div>
-                    <div class="card-value income count-up text-shimmer" id="totalIncome">0,00 €</div>
+                <div class="summary-card">
+                    <div class="card-label">Total Ingresos</div>
+                    <div class="card-value income" id="totalIncome">0,00 €</div>
                 </div>
-                <div class="summary-card animate-fadeInUp stagger-delay-2 hover-lift card-border-animation">
-                    <div class="card-label">📉 Total Gastos</div>
-                    <div class="card-value expense count-up text-shimmer" id="totalExpenses">0,00 €</div>
+                <div class="summary-card">
+                    <div class="card-label">Total Gastos</div>
+                    <div class="card-value expense" id="totalExpenses">0,00 €</div>
                 </div>
-                <div class="summary-card balance animate-fadeInUp stagger-delay-3 hover-lift card-border-animation">
-                    <div class="card-label">💰 Dinero Disponible</div>
-                    <div class="card-value balance count-up" id="availableBalance">0,00 €</div>
+                <div class="summary-card balance">
+                    <div class="card-label">Dinero Disponible</div>
+                    <div class="card-value balance" id="availableBalance">0,00 €</div>
                 </div>
             </div>
             
             <!-- 🆕 SECCIÓN DE ALERTAS INTELIGENTES -->
-            <section class="alertas-section animate-fadeInUp">
+            <section class="alertas-section">
                 <div class="container">
                     <div id="alertas-container" class="alertas-container">
                         <!-- Las alertas se generarán aquí automáticamente -->
-                        <div class="alerta-item alerta-info hover-lift">
-                            <span class="alerta-icono animate-float">📊</span>
+                        <div class="alerta-item alerta-info">
+                            <span class="alerta-icono">📊</span>
                             <span class="alerta-texto">Cargando tus datos financieros...</span>
                         </div>
                     </div>
@@ -64,33 +62,33 @@
             </section>
             
             <!-- 🆕 SECCIÓN DE PRESUPUESTOS VISUALES -->
-            <section class="presupuestos-section animate-fadeInUp stagger-delay-1">
+            <section class="presupuestos-section">
                 <div class="container">
-                    <h2 class="section-title text-gradient reveal-text">📋 Presupuestos Mensuales</h2>
+                    <h2 class="section-title">📋 Presupuestos Mensuales</h2>
                     <p class="section-subtitle">Seguimiento de gastos vs tus límites establecidos</p>
                     <div id="presupuestos-container" class="presupuestos-container">
                         <!-- Los presupuestos se generarán aquí -->
-                        <div class="cargando text-gradient">Calculando tus presupuestos...</div>
+                        <div class="cargando">Calculando tus presupuestos...</div>
                     </div>
                 </div>
             </section>
             
             <!-- 🆕 SECCIÓN DE PROYECCIÓN FIN DE MES -->
-            <section class="proyeccion-section animate-fadeInUp stagger-delay-2">
+            <section class="proyeccion-section">
                 <div class="container">
-                    <h2 class="section-title text-gradient reveal-text">🔮 Proyección Fin de Mes</h2>
+                    <h2 class="section-title">🔮 Proyección Fin de Mes</h2>
                     <p class="section-subtitle">Calculamos automáticamente cómo terminarás el mes</p>
                     <div id="proyeccion-container" class="proyeccion-container">
                         <!-- La proyección se generará aquí -->
-                        <div class="cargando text-gradient">Calculando proyección...</div>
+                        <div class="cargando">Calculando proyección...</div>
                     </div>
                 </div>
             </section>
             
             <!-- Gráficos y Lista de Gastos -->
             <div class="charts-grid">
-                <div class="chart-card animate-fadeInUp stagger-delay-3 hover-lift">
-                    <h2 class="chart-title text-gradient">📊 Gastos por Categoría</h2>
+                <div class="chart-card">
+                    <h2 class="chart-title">Gastos por Categoría</h2>
                     <div class="chart-container">
                         <canvas id="pieChart"></canvas>
                         <div id="pieChartEmpty" class="empty-state" style="display: none;">
@@ -99,8 +97,8 @@
                     </div>
                 </div>
                 
-                <div class="chart-card animate-fadeInUp stagger-delay-4 hover-lift">
-                    <h2 class="chart-title text-gradient">📝 Resumen de Gastos</h2>
+                <div class="chart-card">
+                    <h2 class="chart-title">Resumen de Gastos</h2>
                     <div id="expenseList" class="expense-list">
                         <div class="empty-state">No hay gastos registrados</div>
                     </div>
@@ -110,70 +108,5 @@
     </main>
     
     <script src="app.js"></script>
-    
-    <script>
-    // Script para activar las animaciones de conteo cuando se cargan los datos
-    document.addEventListener('DOMContentLoaded', function() {
-        // Función para activar animaciones count-up cuando se actualicen los valores
-        function activateCountAnimations() {
-            const countElements = document.querySelectorAll('.count-up');
-            countElements.forEach(el => {
-                el.style.animation = 'none';
-                setTimeout(() => {
-                    el.style.animation = 'countUp 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards';
-                    el.style.opacity = '0';
-                    setTimeout(() => {
-                        el.style.opacity = '1';
-                    }, 100);
-                }, 10);
-            });
-        }
-        
-        // Activar animaciones cuando se haga clic en el botón de actualizar
-        const refreshBtn = document.getElementById('refreshBtn');
-        if (refreshBtn) {
-            refreshBtn.addEventListener('click', function() {
-                // Agregar efecto de clic al botón
-                this.classList.add('btn-magnetic');
-                setTimeout(() => {
-                    this.classList.remove('btn-magnetic');
-                }, 300);
-                
-                // Activar animaciones después de un breve delay (simulando carga)
-                setTimeout(activateCountAnimations, 500);
-            });
-        }
-        
-        // Activar animaciones iniciales
-        setTimeout(activateCountAnimations, 1000);
-        
-        // Efecto de partículas dinámico
-        const particlesContainers = document.querySelectorAll('.particles-container');
-        particlesContainers.forEach((container, index) => {
-            container.style.animationDelay = `${index * 0.5}s`;
-        });
-        
-        // Efecto hover para todas las tarjetas con animación de borde
-        const animatedCards = document.querySelectorAll('.card-border-animation');
-        animatedCards.forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.zIndex = '10';
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                this.style.zIndex = '1';
-            });
-        });
-        
-        // Revelar texto progresivamente
-        const revealTexts = document.querySelectorAll('.reveal-text');
-        revealTexts.forEach((text, index) => {
-            setTimeout(() => {
-                text.style.animation = 'slideIn 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
-                text.style.animationDelay = `${index * 0.3 + 0.5}s`;
-            }, 500);
-        });
-    });
-    </script>
 </body>
 </html>
