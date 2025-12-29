@@ -126,7 +126,7 @@ body {
     padding: 0 2rem;
 }
 
-/* ===== HEADER MODERNO (NO FIJO) ===== */
+/* ===== HEADER MODERNO (NO FIJO - CORREGIDO) ===== */
 header {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 255, 0.98));
     backdrop-filter: blur(10px);
@@ -137,6 +137,12 @@ header {
     animation: fadeInDown 0.6s var(--bezier-smooth);
     position: relative;
     z-index: 100;
+    /* PROPIEDADES CLAVE PARA QUE NO SEA FIJADO */
+    position: static !important;
+    top: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
 }
 
 .header-content {
