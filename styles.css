@@ -305,67 +305,6 @@ section {
     border-left: 4px solid var(--accent-green);
 }
 
-/* ===== PRESUPUESTOS VISUALES ===== */
-.presupuestos-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-}
-
-.presupuesto-card {
-    background: var(--dark-card);
-    border: 1px solid var(--dark-border);
-    border-radius: var(--border-radius);
-    padding: 1.5rem;
-    transition: var(--transition);
-}
-
-.presupuesto-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-lg);
-}
-
-.presupuesto-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.presupuesto-titulo {
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.presupuesto-monto {
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 600;
-}
-
-.progress-bar {
-    height: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    overflow: hidden;
-    margin: 1rem 0;
-}
-
-.progress-fill {
-    height: 100%;
-    background: var(--primary-gradient);
-    border-radius: 4px;
-    transition: width 1s ease-out;
-}
-
-.presupuesto-info {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.875rem;
-    color: var(--muted-text);
-}
-
 /* ===== PROYECCIÓN FIN DE MES ===== */
 .proyeccion-container {
     display: grid;
