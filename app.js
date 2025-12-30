@@ -4,12 +4,13 @@ let pieChartInstance = null;
 
 // 🆕 TUS PRESUPUESTOS MENSUALES (ajusta estos valores)
 const PRESUPUESTOS = {
-    'Alimentación': 250,
-    'Salud e higiene': 100,
-    'Transporte': 80,
-    'Ocio': 150,
-    'Vivienda': 500,
-    'Otros': 200
+    'Alimentación': 70,
+    'Seguro Patinete': 23,
+    'Lineas Telefonica': 25,
+    'Alquiler': 425,
+    'Mi Hija': 100,
+    'Mami': 40,
+    'Otros': 50
 };
 
 // ===== FUNCIÓN PRINCIPAL =====
